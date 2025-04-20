@@ -272,11 +272,29 @@ public class frmTrangChu extends JFrame implements MouseListener {
     }
 
     private void showDatBanForm() {
-        pnlTrangChu.setVisible(false);
-        pnlDatBan.setBounds(258, 58, 1243, 697); // Ensure correct bounds
+        // Hide all other panels
+        if (pnlTrangChu != null) pnlTrangChu.setVisible(false);
+        if (pnlHoaDon != null) pnlHoaDon.setVisible(false);
+        if (pnlKhuyenMai != null) pnlKhuyenMai.setVisible(false);
+        if (pnlSanPham != null) pnlSanPham.setVisible(false);
+        if (pnlKhachHang != null) pnlKhachHang.setVisible(false);
+        if (pnlNhanVien != null) pnlNhanVien.setVisible(false);
+        if (pnlThongKe != null) pnlThongKe.setVisible(false);
+
+        // Remove existing pnlDatBan if it exists
+        if (pnlDatBan != null) {
+            contentPane.remove(pnlDatBan);
+        }
+
+        // Create new instance of frmDatBan
+        pnlDatBan = new frmDatBan();
+        pnlDatBan.setBounds(258, 58, 1243, 697);
+        contentPane.add(pnlDatBan);
         pnlDatBan.setVisible(true);
-        pnlDatBan.revalidate();
-        pnlDatBan.repaint();
+
+        // Refresh the display
+        contentPane.revalidate();
+        contentPane.repaint();
     }
 
     private JPanel createTableOverviewPanel() {
