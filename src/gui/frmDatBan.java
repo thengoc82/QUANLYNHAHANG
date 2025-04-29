@@ -1,14 +1,45 @@
 package gui;
 
-import dao.BanDAO;
-import entity.Ban;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+
+import dao.BanDAO;
+import entity.Ban;
 
 public class frmDatBan extends JPanel {
     private final JPanel pnlFloorPlan;
@@ -17,6 +48,7 @@ public class frmDatBan extends JPanel {
     private final Color colorAvailable = new Color(102, 187, 106);     // Green
     private final Color colorOccupied = new Color(239, 83, 80);       // Red
     private final Color colorSelected = new Color(41, 182, 246);      // Blue
+    private final Color colorReserved = new Color(255, 152, 0);      // Orange for reserved
     private Set<Ban> selectedTables = new HashSet<>();
     private String currentFilter = "Tất cả";
     private JProgressBar progressBar;
@@ -27,6 +59,12 @@ public class frmDatBan extends JPanel {
         new Color(255, 153, 51),  // Orange for food ordering
         new Color(51, 204, 51)    // Green for payment
     };
+    
+    // Add new fields for reservation
+    private JSpinner dateSpinner;
+    private JSpinner timeSpinner;
+    private JCheckBox chkDatTruoc;
+    private JPanel pnlReservation;
 
     public frmDatBan() {
         setBackground(new Color(51, 51, 51));
@@ -101,6 +139,9 @@ public class frmDatBan extends JPanel {
         pnlLeft.setPreferredSize(new Dimension(200, 0));
         pnlLeft.setLayout(new BoxLayout(pnlLeft, BoxLayout.Y_AXIS));
         
+        // Add Reservation Panel
+        pnlReservation = createReservationPanel();
+        
         // Floor Selection Panel
         JPanel pnlFloorSelect = new JPanel();
         pnlFloorSelect.setBackground(new Color(64, 64, 64));
@@ -146,6 +187,8 @@ public class frmDatBan extends JPanel {
         
         // Add components to left panel
         pnlLeft.add(Box.createVerticalStrut(20));
+        pnlLeft.add(pnlReservation);
+        pnlLeft.add(Box.createVerticalStrut(10));
         pnlLeft.add(pnlFloorSelect);
         pnlLeft.add(Box.createVerticalStrut(10));
         pnlLeft.add(pnlLegend);
@@ -189,29 +232,7 @@ public class frmDatBan extends JPanel {
         // Load tables and set up listeners
         loadTables();
         
-        btnDatBan.addActionListener(e -> {
-            if (!selectedTables.isEmpty()) {
-                boolean anyBooked = false;
-                for (Ban selectedTable : selectedTables) {
-                    if (selectedTable.isTinhTrang()) {
-                        selectedTable.setTinhTrang(false);
-                        BanDAO.getInstance().setTinhTrang(selectedTable, false);
-                        anyBooked = true;
-                    }
-                }
-                if (anyBooked) {
-                    JOptionPane.showMessageDialog(this, "Đã đặt " + selectedTables.size() + " bàn");
-                    updateFloorPlan();
-                    
-                    // Open the frmGoiMon form with multiple tables
-                    openGoiMonForm(new ArrayList<>(selectedTables));
-                } else {
-                    JOptionPane.showMessageDialog(this, "Các bàn đã được đặt!");
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một bàn!");
-            }
-        });
+        setupDatBanButton(btnDatBan);
 
         btnHuyBan.addActionListener(e -> {
             if (!selectedTables.isEmpty()) {
@@ -246,10 +267,11 @@ public class frmDatBan extends JPanel {
         
         // Add square and text
         btn.add(square);
-        btn.add(new JLabel(text));
+        JLabel lblText = new JLabel(text);
+        lblText.setForeground(Color.WHITE);
+        lblText.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btn.add(lblText);
         
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btn.setForeground(Color.WHITE);
         btn.setBackground(new Color(64, 64, 64));
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
@@ -263,10 +285,12 @@ public class frmDatBan extends JPanel {
         
         btn.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
-                btn.setBackground(new Color(75, 75, 75));
+                lblText.setForeground(new Color(41, 182, 246));
+                btn.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(41, 182, 246)));
             }
             public void mouseExited(MouseEvent e) {
-                btn.setBackground(new Color(64, 64, 64));
+                lblText.setForeground(Color.WHITE);
+                btn.setBorder(null);
             }
         });
         
@@ -366,12 +390,12 @@ public class frmDatBan extends JPanel {
         // Set color based on selection and status
         if (selectedTables.contains(ban)) {
             statusIndicator.setBackground(new Color(41, 182, 246)); // Blue color for selected tables
-            button.setBorder(BorderFactory.createLineBorder(new Color(41, 182, 246), 3)); // Blue border
+            button.setBorder(BorderFactory.createLineBorder(new Color(41, 182, 246), 2));
         } else if (!ban.isTinhTrang()) {
-            statusIndicator.setBackground(colorOccupied);
+            statusIndicator.setBackground(new Color(239, 83, 80));  // Red for occupied
             button.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         } else {
-            statusIndicator.setBackground(colorAvailable);
+            statusIndicator.setBackground(new Color(102, 187, 106));  // Green for available
             button.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         }
         
@@ -398,12 +422,12 @@ public class frmDatBan extends JPanel {
             updateFloorPlan();
         });
 
-        // Add hover effect
+        // Add hover effect that only changes the border
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (!selectedTables.contains(ban)) {
-                    button.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                    button.setBorder(BorderFactory.createLineBorder(new Color(41, 182, 246), 2));
                 }
             }
             
@@ -441,43 +465,50 @@ public class frmDatBan extends JPanel {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btn.setForeground(Color.WHITE);
-        btn.setBackground(floor == currentFloor ? new Color(90, 90, 90) : new Color(75, 75, 75));
+        btn.setBackground(new Color(75, 75, 75));
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
         btn.setPreferredSize(new Dimension(160, 40));
         btn.setMaximumSize(new Dimension(160, 40));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         
+        if (floor == currentFloor) {
+            btn.setForeground(new Color(41, 182, 246));
+            btn.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(41, 182, 246)));
+        }
+        
         btn.addActionListener(e -> {
+            // Update all floor buttons
+            for (Component c : ((JPanel)btn.getParent()).getComponents()) {
+                if (c instanceof JButton) {
+                    JButton otherBtn = (JButton)c;
+                    otherBtn.setForeground(Color.WHITE);
+                    otherBtn.setBorder(null);
+                }
+            }
+            
             currentFloor = floor;
-            updateFloorButtons();
+            btn.setForeground(new Color(41, 182, 246));
+            btn.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(41, 182, 246)));
             updateFloorPlan();
         });
         
         btn.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
                 if (floor != currentFloor) {
-                    btn.setBackground(new Color(85, 85, 85));
+                    btn.setForeground(new Color(41, 182, 246));
+                    btn.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(41, 182, 246)));
                 }
             }
             public void mouseExited(MouseEvent e) {
-                btn.setBackground(floor == currentFloor ? new Color(90, 90, 90) : new Color(75, 75, 75));
+                if (floor != currentFloor) {
+                    btn.setForeground(Color.WHITE);
+                    btn.setBorder(null);
+                }
             }
         });
         
         return btn;
-    }
-
-    private void updateFloorButtons() {
-        for (Component c : ((JPanel)getComponent(1)).getComponents()) {
-            if (c instanceof JButton) {
-                JButton btn = (JButton)c;
-                if (btn.getText().startsWith("Lầu")) {
-                    int floor = Integer.parseInt(btn.getText().substring(4));
-                    btn.setBackground(floor == currentFloor ? new Color(90, 90, 90) : new Color(75, 75, 75));
-                }
-            }
-        }
     }
 
     private void startProgress() {
@@ -531,5 +562,129 @@ public class frmDatBan extends JPanel {
     private void resetProgress() {
         currentStep = 1;
         progressBar.repaint();
+    }
+
+    private JPanel createReservationPanel() {
+        JPanel panel = new JPanel();
+        panel.setBackground(new Color(64, 64, 64));
+        panel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(Color.WHITE),
+            "Đặt bàn trước",
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            new Font("Segoe UI", Font.BOLD, 14),
+            Color.WHITE
+        ));
+        panel.setLayout(new GridLayout(0, 1, 5, 5));
+
+        // Checkbox for advance reservation
+        chkDatTruoc = new JCheckBox("Đặt bàn trước");
+        chkDatTruoc.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        chkDatTruoc.setForeground(Color.WHITE);
+        chkDatTruoc.setBackground(new Color(64, 64, 64));
+
+        // Date Spinner
+        JPanel datePanel = new JPanel(new BorderLayout(5, 0));
+        datePanel.setBackground(new Color(64, 64, 64));
+        JLabel lblDate = new JLabel("Ngày:");
+        lblDate.setForeground(Color.WHITE);
+        dateSpinner = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy");
+        dateSpinner.setEditor(dateEditor);
+        datePanel.add(lblDate, BorderLayout.WEST);
+        datePanel.add(dateSpinner, BorderLayout.CENTER);
+
+        // Time Spinner
+        JPanel timePanel = new JPanel(new BorderLayout(5, 0));
+        timePanel.setBackground(new Color(64, 64, 64));
+        JLabel lblTime = new JLabel("Giờ:");
+        lblTime.setForeground(Color.WHITE);
+        timeSpinner = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm");
+        timeSpinner.setEditor(timeEditor);
+        timePanel.add(lblTime, BorderLayout.WEST);
+        timePanel.add(timeSpinner, BorderLayout.CENTER);
+
+        // Add components
+        panel.add(chkDatTruoc);
+        panel.add(datePanel);
+        panel.add(timePanel);
+
+        // Enable/disable date/time based on checkbox
+        dateSpinner.setEnabled(false);
+        timeSpinner.setEnabled(false);
+        chkDatTruoc.addActionListener(e -> {
+            boolean isSelected = chkDatTruoc.isSelected();
+            dateSpinner.setEnabled(isSelected);
+            timeSpinner.setEnabled(isSelected);
+            updateTableDisplay();
+        });
+
+        return panel;
+    }
+
+    private void updateTableDisplay() {
+        // Update the table display based on reservation status
+        updateFloorPlan();
+    }
+
+    private void setupDatBanButton(JButton btnDatBan) {
+        btnDatBan.addActionListener(e -> {
+            if (!selectedTables.isEmpty()) {
+                if (chkDatTruoc.isSelected()) {
+                    // Handle advance reservation
+                    Date selectedDate = (Date) dateSpinner.getValue();
+                    Date selectedTime = (Date) timeSpinner.getValue();
+                    
+                    // Combine date and time
+                    Calendar date = Calendar.getInstance();
+                    date.setTime(selectedDate);
+                    Calendar time = Calendar.getInstance();
+                    time.setTime(selectedTime);
+                    
+                    date.set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY));
+                    date.set(Calendar.MINUTE, time.get(Calendar.MINUTE));
+                    
+                    // Validate reservation time
+                    if (date.getTime().before(new Date())) {
+                        JOptionPane.showMessageDialog(this, 
+                            "Vui lòng chọn thời gian trong tương lai!", 
+                            "Lỗi", 
+                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    // Process reservation
+                    for (Ban selectedTable : selectedTables) {
+                        // TODO: Add reservation to database with date/time
+                        selectedTable.setTinhTrang(false);
+                        BanDAO.getInstance().setTinhTrang(selectedTable, false);
+                    }
+                    JOptionPane.showMessageDialog(this, 
+                        "Đã đặt " + selectedTables.size() + " bàn cho ngày " + 
+                        new SimpleDateFormat("dd/MM/yyyy HH:mm").format(date.getTime()));
+                } else {
+                    // Handle immediate booking
+                    boolean anyBooked = false;
+                    for (Ban selectedTable : selectedTables) {
+                        if (selectedTable.isTinhTrang()) {
+                            selectedTable.setTinhTrang(false);
+                            BanDAO.getInstance().setTinhTrang(selectedTable, false);
+                            anyBooked = true;
+                        }
+                    }
+                    if (anyBooked) {
+                        JOptionPane.showMessageDialog(this, "Đã đặt " + selectedTables.size() + " bàn");
+                        // Open the frmGoiMon form with multiple tables
+                        openGoiMonForm(new ArrayList<>(selectedTables));
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Các bàn đã được đặt!");
+                    }
+                }
+                updateFloorPlan();
+            } else {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một bàn!");
+            }
+        });
     }
 } 

@@ -1,14 +1,11 @@
 package connectDB;
-import java.io.File;
-import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import javax.swing.JOptionPane;
 
-import controler.main;
+import javax.swing.JOptionPane;
 
 public class connectDB {
 	//tạo kết nối
@@ -40,6 +37,7 @@ public class connectDB {
         return con;
     }
     public static void closeConnection(Connection con) {
+        
 		try {
 			if(con!= null)
 				con.close();

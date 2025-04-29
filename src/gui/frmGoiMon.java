@@ -1,21 +1,57 @@
 package gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
 import dao.LoaiSanPhamDAO;
 import dao.SanPhamDAO;
 import entity.Ban;
 import entity.ChiTietHoaDon;
 import entity.KichThuoc;
 import entity.SanPham;
-import java.awt.*;
-import java.awt.event.*;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Map;
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import javax.swing.table.*;
-import javax.swing.SwingWorker;
 
 public class frmGoiMon extends JPanel {
     private final ArrayList<Ban> selectedTables;
@@ -56,7 +92,7 @@ public class frmGoiMon extends JPanel {
     
     private void initComponents() {
         setLayout(new BorderLayout());
-        setBounds(258, 58, 1243, 697); // Adjusted to align with menu width
+        setBounds(240, 58, 1261, 697); // Adjusted to remove gap with menu
         
         // Progress Bar Panel at the top
         JPanel pnlProgress = new JPanel(new BorderLayout());
@@ -175,7 +211,7 @@ public class frmGoiMon extends JPanel {
         pnlLeft.add(pnlSelectedTables);
         pnlLeft.add(Box.createVerticalGlue());
         
-        // Products Grid Panel
+        // Products Grid Panel with faster scrolling
         pnlSanPham = new JPanel(new GridLayout(0, 2, 10, 10));
         pnlSanPham.setBackground(Color.BLACK);
         pnlSanPham.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -183,6 +219,7 @@ public class frmGoiMon extends JPanel {
         JScrollPane scrollSanPham = new JScrollPane(pnlSanPham);
         scrollSanPham.setBorder(null);
         scrollSanPham.getViewport().setBackground(Color.BLACK);
+        scrollSanPham.getVerticalScrollBar().setUnitIncrement(16); // Increased scroll speed
         
         // Search panel
         JPanel pnlSearch = new JPanel(new BorderLayout());
@@ -203,7 +240,7 @@ public class frmGoiMon extends JPanel {
         pnlRight.setPreferredSize(new Dimension(400, 0));
         
         // Order table
-        String[] columnNames = {"Tên món ăn", "Kích thước", "Số lượng", "Đơn giá", "Thành tiền"};
+        String[] columnNames = {"Tên món ăn", "Kích thước", "Số lượng", "Đơn giá", "Tổng tiền"};  // Removed status column
         DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -223,6 +260,7 @@ public class frmGoiMon extends JPanel {
         scrollOrder.setBackground(Color.BLACK);
         scrollOrder.getViewport().setBackground(Color.BLACK);
         scrollOrder.setBorder(BorderFactory.createLineBorder(new Color(70, 70, 70)));
+        scrollOrder.getVerticalScrollBar().setUnitIncrement(16); // Increased scroll speed
         
         // Payment info panel
         JPanel pnlPayment = new JPanel(new GridLayout(3, 2, 5, 5));

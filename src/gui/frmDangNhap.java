@@ -1,9 +1,4 @@
-
 package gui;
-import controler.bienStatic;
-import dao.NhanVienDAO;
-import dao.TaiKhoanDAO;
-import entity.TaiKhoan;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -13,6 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
 import javax.swing.BorderFactory;
 import javax.swing.DropMode;
 import javax.swing.GroupLayout;
@@ -24,6 +20,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import controler.bienStatic;
+import dao.NhanVienDAO;
+import dao.TaiKhoanDAO;
+import entity.TaiKhoan;
 
 
 public class frmDangNhap extends javax.swing.JFrame {
@@ -224,8 +225,7 @@ public class frmDangNhap extends javax.swing.JFrame {
                 }// </editor-fold>//GEN-END:initComponents
             
                 private void jButton1ActionPerformed(ActionEvent evt) {
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'jButton1ActionPerformed'");
+                    checkPassword();
                 }
             
                 public static void main(String[] args) {
