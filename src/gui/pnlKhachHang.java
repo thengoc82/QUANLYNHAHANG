@@ -48,15 +48,24 @@ public class pnlKhachHang extends JPanel implements ActionListener, MouseListene
 	/**
 	 * Create the frame.
 	 */
+	public class Colors {
+	    public static final Color COLOR_LIGHTBLACK = new Color(34, 34, 34);        // Gần như đen
+	    public static final Color COLOR_MEDIUM_GRAY = new Color(91, 90, 90); // Xám đậm
+	    public static final Color COLOR_LIGHT_GRAY = new Color(200, 200, 200); // Xám nhạt
+	    public static final Color COLOR_RED = new Color(186, 90, 90);        // Đỏ nhạt
+	    public static final Color COLOR_GREEN = new Color(77, 188, 137);     // Xanh lục
+	    public static final Color COLOR_LIGHT_CYAN = new Color(70, 130, 180); //XANH DUONG NHAT
+	    // Có thể thêm nhiều màu khác nếu cầnnew Color(70, 130, 180)
+	}
 	public pnlKhachHang(JFrame frmTrangChu) {
-		setBackground(new Color(186, 90, 90));
+		setBackground(Colors.COLOR_LIGHTBLACK);
 		setBounds(10, 58, 1491, 697);
 		setLayout(null);
 		
 		JPanel pnlChucNang = new JPanel();
 		pnlChucNang.setBorder(new TitledBorder(null, "Ch\u1EE9c n\u0103ng", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlChucNang.setForeground(Color.WHITE);
-		pnlChucNang.setBackground(new Color(186, 90, 90));
+		pnlChucNang.setBackground(Colors.COLOR_LIGHT_GRAY);
 		pnlChucNang.setBounds(56, 10, 383, 56);
 		add(pnlChucNang);
 		pnlChucNang.setLayout(null);
@@ -341,7 +350,7 @@ public class RoundedTextField extends JTextField {
 	@Override
 	protected void paintBorder(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g.create();
-		g2.setColor(Color.GRAY);
+		g2.setColor(Colors.COLOR_MEDIUM_GRAY);
 		g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
 		g2.dispose();
 	}
@@ -374,7 +383,7 @@ public class RoundedButton extends JButton {
 	@Override
 	protected void paintBorder(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g.create();
-		g2.setColor(new Color(100, 100, 100));
+		g2.setColor(Colors.COLOR_MEDIUM_GRAY);
 		g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
 		g2.dispose();
 	}

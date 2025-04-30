@@ -67,15 +67,24 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 	/**
 	 * Create the frame.
 	 */
+	public class Colors {
+	    public static final Color COLOR_LIGHTBLACK = new Color(34, 34, 34);        // Gần như đen
+	    public static final Color COLOR_MEDIUM_GRAY = new Color(91, 90, 90); // Xám đậm
+	    public static final Color COLOR_LIGHT_GRAY = new Color(200, 200, 200); // Xám nhạt
+	    public static final Color COLOR_RED = new Color(186, 90, 90);        // Đỏ nhạt
+	    public static final Color COLOR_GREEN = new Color(77, 188, 137);     // Xanh lục
+
+	    // Có thể thêm nhiều màu khác nếu cần
+	}
 	public pnlKhuyenMai() { 	
-		setBackground(new Color(186, 90, 90));
+		setBackground(Colors.COLOR_LIGHTBLACK);
 		setBounds(10, 74, 1479, 681);
 		setLayout(null);
 		
 		JPanel pnlKhung1 = new JPanel();
 		pnlKhung1.setBorder(new TitledBorder(null, "Danh s\u00E1ch khuy\u1EBFn m\u00E3i", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlKhung1.setForeground(Color.WHITE);
-		pnlKhung1.setBackground(new Color(186, 90, 90));
+		pnlKhung1.setBackground(Colors.COLOR_MEDIUM_GRAY);
 		pnlKhung1.setBounds(10, 10, 805, 261);
 		add(pnlKhung1);
 		pnlKhung1.setLayout(null);
@@ -114,7 +123,7 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
                         capNhatBangKhuyenMai();
                     }else {
                         for (KhuyenMai km : danhSachKhuyenMai) {
-                            if(km.isTrangThai() == true && km.getNgayKetThuc().isBefore(LocalDateTime.now()) && selectedLoai.equals("Đang áp dụng")) {
+                        	if (km.isTrangThai() && km.getNgayKetThuc().isAfter(LocalDateTime.now()) && selectedLoai.equals("Đang áp dụng")) {
                                 Object[] row = { km.getMaKhuyenMai(), km.getTenKhuyenMai(),km.getNgayBatDau(), km.getNgayKetThuc(), km.getPhanTramGiamGia(),km.isTrangThai()?"Đang áp dụng":"Kết thúc",km.getMoTa()};
                                 modalKhuyenMai.addRow(row);
                             }else {
@@ -244,8 +253,8 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 		});
 		
 		JComboBox cboLoai = new JComboBox();
-		cboLoai.setModel(new DefaultComboBoxModel(new String[] {"Tất cả", "Cafe","Bánh ngọt","Khác"}));
-		
+		cboLoai.setModel(new DefaultComboBoxModel<>(new String[] {"Tất cả", "Cafe", "Bánh ngọt", "Khác"}));
+
 		cboLoai.setBounds(425, 20, 115, 21);
 		pnlTim.add(cboLoai);
 		cboLoai.addActionListener((ActionEvent e) -> {
@@ -286,7 +295,7 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 		pnlKhung3.setLayout(null);
 		
 		 btnThem = new RoundedButton("Thêm");
-		btnThem.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnThem.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnThem.setBounds(325, 534, 150, 47);
 		pnlKhung3.add(btnThem);
 		btnThem.addActionListener(new ActionListener() {
@@ -331,7 +340,7 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 		});
 		
 		btnCapNhat = new RoundedButton("Cập nhật");
-		btnCapNhat.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnCapNhat.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnCapNhat.setBounds(121, 538, 138, 43);
 		pnlKhung3.add(btnCapNhat);
 		btnCapNhat.addActionListener(new ActionListener() {
@@ -380,10 +389,10 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 		JLabel lblMT = new JLabel("Mô tả:");
 		lblMT.setBounds(100, 382, 49, 19);
 		pnlKhung3.add(lblMT);
-		lblMT.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblMT.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		
 		cboTinhTrangKM = new JComboBox();
-		cboTinhTrangKM.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		cboTinhTrangKM.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		cboTinhTrangKM.setBounds(175, 328, 377, 28);
 		pnlKhung3.add(cboTinhTrangKM);
 		cboTinhTrangKM.setModel(new DefaultComboBoxModel(new String[] {"Đang áp dụng", "Kết thúc"}));
@@ -391,7 +400,7 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 		JLabel lblTinhTrang1 = new JLabel("Tình trạng:");
 		lblTinhTrang1.setBounds(80, 331, 76, 19);
 		pnlKhung3.add(lblTinhTrang1);
-		lblTinhTrang1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblTinhTrang1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		
 		txtGiamGia = new JTextField();
 		txtGiamGia.setBounds(175, 282, 377, 28);
@@ -401,17 +410,17 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 		JLabel lblGiamGia = new JLabel("Phần trăm giảm giá:");
 		lblGiamGia.setBounds(16, 284, 138, 19);
 		pnlKhung3.add(lblGiamGia);
-		lblGiamGia.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblGiamGia.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		
 		JLabel lblNgayKT = new JLabel("Ngày kết thúc:");
 		lblNgayKT.setBounds(50, 236, 104, 19);
 		pnlKhung3.add(lblNgayKT);
-		lblNgayKT.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblNgayKT.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		
 		JLabel lblNgayBatDau = new JLabel("Ngày bắt đầu:");
 		lblNgayBatDau.setBounds(57, 172, 97, 19);
 		pnlKhung3.add(lblNgayBatDau);
-		lblNgayBatDau.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblNgayBatDau.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		
 		txtTenKM = new JTextField();
 		txtTenKM.setBounds(175, 104, 377, 28);
@@ -421,10 +430,10 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 		JLabel lblTenKM = new JLabel("Tên khuyến mãi:");
 		lblTenKM.setBounds(50, 106, 114, 19);
 		pnlKhung3.add(lblTenKM);
-		lblTenKM.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblTenKM.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		
 		btnLamMoi = new RoundedButton("Làm mới");
-		btnLamMoi.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnLamMoi.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnLamMoi.setBounds(438, 478, 114, 21);
 		pnlKhung3.add(btnLamMoi);
 		
@@ -437,7 +446,7 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 		pnlKhung3.add(dcNgayBD);
 		
 		JLabel lblMaKhuyenMai = new JLabel("Mã khuyến mãi:");
-		lblMaKhuyenMai.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblMaKhuyenMai.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblMaKhuyenMai.setBounds(50, 49, 114, 19);
 		pnlKhung3.add(lblMaKhuyenMai);
 		
@@ -787,7 +796,7 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 		@Override
 		protected void paintBorder(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setColor(Color.GRAY);
+			g2.setColor(Colors.COLOR_LIGHT_GRAY);
 			g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
 			g2.dispose();
 		}
@@ -820,7 +829,7 @@ public class pnlKhuyenMai extends JPanel implements ActionListener, MouseListene
 		@Override
 		protected void paintBorder(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setColor(new Color(100, 100, 100));
+			g2.setColor(Colors.COLOR_LIGHT_GRAY);
 			g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
 			g2.dispose();
 		}
