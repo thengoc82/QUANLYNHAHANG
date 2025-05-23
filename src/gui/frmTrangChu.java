@@ -287,20 +287,19 @@ public class frmTrangChu extends JFrame implements MouseListener {
         pnlDashboard.add(pnlQuickActions, BorderLayout.NORTH);
 
         // Center section with grid layout
-        JPanel pnlCenter = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel pnlCenter = new JPanel(new BorderLayout(10, 10));
         pnlCenter.setBackground(new Color(51, 51, 51));
 
-        // Table Overview Panel
-        JPanel pnlTableOverview = createTableOverviewPanel();
-        pnlCenter.add(pnlTableOverview);
+        // Bên trái: Tổng quan bàn + Tổng kết ngày (gộp lại)
+        JPanel pnlLeft = new JPanel(new GridLayout(2, 1, 10, 10));
+        pnlLeft.setBackground(new Color(51, 51, 51));
+        pnlLeft.add(createTableOverviewPanel());
+        pnlLeft.add(createDailySummaryPanel());
+        pnlCenter.add(pnlLeft, BorderLayout.CENTER);
 
-        // Active Orders Dashboard
+        // Bên phải: Đơn hàng đang hoạt động (chiếm toàn bộ chiều cao cột phải)
         JPanel pnlActiveOrders = createActiveOrdersPanel();
-        pnlCenter.add(pnlActiveOrders);
-
-        // Daily Summary Panel with Popular Items
-        JPanel pnlDailySummary = createDailySummaryPanel();
-        pnlCenter.add(pnlDailySummary);
+        pnlCenter.add(pnlActiveOrders, BorderLayout.EAST);
 
         pnlDashboard.add(pnlCenter, BorderLayout.CENTER);
         pnlTrangChu.add(pnlDashboard);
@@ -319,19 +318,10 @@ public class frmTrangChu extends JFrame implements MouseListener {
         panel.setBackground(new Color(64, 64, 64));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Search bar
-        JPanel pnlSearch = new JPanel(new BorderLayout(5, 0));
-        pnlSearch.setBackground(new Color(64, 64, 64));
-        JTextField txtSearch = new RoundedTextField(20);
-        txtSearch.setPreferredSize(new Dimension(300, 35));
-        txtSearch.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        pnlSearch.add(txtSearch, BorderLayout.CENTER);
-
-        // Quick action buttons
-        JPanel pnlButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        // Quick action buttons (only "Đơn mới")
+        JPanel pnlButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         pnlButtons.setBackground(new Color(64, 64, 64));
 
-        // Create "Đơn mới" button with special handling
         JButton btnDonMoi = createStyledButton("Đơn mới", new Color(102, 187, 106));
         btnDonMoi.addActionListener(e -> {
             showDatBanForm();
@@ -339,8 +329,8 @@ public class frmTrangChu extends JFrame implements MouseListener {
 
         pnlButtons.add(btnDonMoi);
 
-        panel.add(pnlSearch, BorderLayout.WEST);
-        panel.add(pnlButtons, BorderLayout.CENTER);
+        // Chỉ thêm nút "Đơn mới" vào bên phải
+        panel.add(pnlButtons, BorderLayout.EAST);
         return panel;
     }
 
@@ -686,8 +676,8 @@ public class frmTrangChu extends JFrame implements MouseListener {
             
             // Create and show new frmGoiMon
             frmGoiMon goiMonForm = new frmGoiMon(selectedTables);
-            goiMonForm.setBounds(240, 58, 1261, 697); // Aligned perfectly with menu
-            contentPane.add(goiMonForm);
+            contentPane.setLayout(new BorderLayout());
+            contentPane.add(goiMonForm, BorderLayout.CENTER);
             goiMonForm.setVisible(true);
             contentPane.revalidate();
             contentPane.repaint();

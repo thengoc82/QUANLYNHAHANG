@@ -83,6 +83,12 @@ public class frmGoiMon extends JPanel {
     
     public frmGoiMon(ArrayList<Ban> tables) {
         this.selectedTables = tables;
+        setBackground(new Color(51, 51, 51));
+        setLayout(new BorderLayout());
+        setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(java.awt.Color.WHITE, 2, true),
+            javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
         initComponents();
         sanPhamDAO = SanPhamDAO.getInstance();
         loaiSanPhamDAO = LoaiSanPhamDAO.getInstance();
@@ -92,7 +98,6 @@ public class frmGoiMon extends JPanel {
     
     private void initComponents() {
         setLayout(new BorderLayout());
-        setBounds(240, 58, 1261, 697); // Adjusted to remove gap with menu
         
         // Progress Bar Panel at the top
         JPanel pnlProgress = new JPanel(new BorderLayout());
